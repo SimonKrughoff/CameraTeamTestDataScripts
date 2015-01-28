@@ -9,8 +9,6 @@ import lsst.afw.image as afwImage
 
 class TestCamDetectorBuilder(DetectorBuilder):
     def _sanitizeHeaderMetadata(self, metadata, clobber):
-        channelMap = {8:(0,1), 9:(1,1), 10:(2,1), 11:(3,1), 12:(4,1), 13:(5,1), 14:(6,1), 15:(7,1),
-                      0:(7,0), 1:(6,0), 2:(5,0), 3:(4,0), 4:(3,0), 5:(2,0), 6:(1,0), 7:(0,0)}
         naxis1 = 544
         naxis2 = 2048
         #all amps have the same biassec
@@ -19,20 +17,15 @@ class TestCamDetectorBuilder(DetectorBuilder):
         channel = getByKey('CHANNEL', metadata)-1
         if channel is None:
             raise ValueError("Channel keyword not found in header")
-        (nx, ny) = channelMap[channel]
+        ny = channel//8
+        sign = 1 if ny%2 else -1
+        nx = 7*ny - sign*(channel%8)
+        print channel, nx, ny
         setByKey('DTV1', nx*naxis1, metadata, clobber)
         setByKey('DTV2', ny*naxis2, metadata, clobber)
         #map to the keyword expected for this value
-        setByKey('DTM1_1', -metadata.get('LTM1_1'), metadata, clobber)
+        setByKey('DTM1_1', metadata.get('LTM1_1'), metadata, clobber)
         setByKey('DTM2_2', metadata.get('LTM2_2'), metadata, clobber)
-        #Will also need to set the DETSEC bbox.
-        dataSecBox = self._makeBbox(getByKey('DATASEC', metadata))
-        dataSecBox.shift(-afwGeom.Extent2I(dataSecBox.getMin()))
-        dims = dataSecBox.getDimensions()
-        dataSecBox.shift(afwGeom.Extent2I(nx*dims.getX(), ny*dims.getY()))
-        setByKey('DETSEC', '[%i:%i, %i:%i]'%(dataSecBox.getMinX()+1, dataSecBox.getMaxX()+1,
-                                             dataSecBox.getMinY()+1, dataSecBox.getMaxY()+1),
-                 metadata, clobber)
         self._defaultSanitization(metadata, clobber)
 
 class imageSource(object):
