@@ -4,7 +4,6 @@ from lsst.afw.cameraGeom.fitsUtils import DetectorBuilder, setByKey, getByKey
 from lsst.ip.isr import AssembleCcdTask
 import lsst.afw.math as afwMath
 import lsst.afw.cameraGeom.utils as camGeomUtils
-import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
 
 class TestCamDetectorBuilder(DetectorBuilder):
@@ -20,7 +19,6 @@ class TestCamDetectorBuilder(DetectorBuilder):
         ny = channel//8
         sign = 1 if ny%2 else -1
         nx = 7*ny - sign*(channel%8)
-        print channel, nx, ny
         setByKey('DTV1', nx*naxis1, metadata, clobber)
         setByKey('DTV2', ny*naxis2, metadata, clobber)
         #map to the keyword expected for this value
