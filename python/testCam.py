@@ -11,19 +11,19 @@ class TestCamDetectorBuilder(DetectorBuilder):
         naxis1 = 544
         naxis2 = 2048
         #all amps have the same biassec
-        setByKey('BIASSEC', '[523:544, 1:2002]', metadata, clobber)
+        setByKey(metadata, 'BIASSEC', '[523:544, 1:2002]', clobber)
         #Get channel number and convert to zero index
-        channel = getByKey('CHANNEL', metadata)-1
+        channel = getByKey(metadata, 'CHANNEL')-1
         if channel is None:
             raise ValueError("Channel keyword not found in header")
         ny = channel//8
         sign = 1 if ny%2 else -1
         nx = 7*ny - sign*(channel%8)
-        setByKey('DTV1', nx*naxis1, metadata, clobber)
-        setByKey('DTV2', ny*naxis2, metadata, clobber)
+        setByKey(metadata, 'DTV1', nx*naxis1, clobber)
+        setByKey(metadata, 'DTV2', ny*naxis2, clobber)
         #map to the keyword expected for this value
-        setByKey('DTM1_1', metadata.get('LTM1_1'), metadata, clobber)
-        setByKey('DTM2_2', metadata.get('LTM2_2'), metadata, clobber)
+        setByKey(metadata, 'DTM1_1', metadata.get('LTM1_1'), clobber)
+        setByKey(metadata, 'DTM2_2', metadata.get('LTM2_2'), clobber)
         self._defaultSanitization(metadata, clobber)
 
 class imageSource(object):
