@@ -54,11 +54,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     imDict = {}
     afilelist = []
-    dfilename = '%s[%i]'%(args.detectorFile, args.detectorFileExt)
+    dfilename = '%s[%i]' % (args.detectorFile, args.detectorFileExt)
     if not args.ampFile:
         args.ampFile = args.detectorFile
     for i in range(args.numAmps):
-        filename = '%s[%i]'%(args.ampFile, i+1)
+        filename = '%s[%i]' % (args.ampFile, i+1)
         md = afwImage.readMetadata(filename)
         afilelist.append(filename)
         imDict[md.get('EXTNAME')] = afwImage.ImageF(filename)
@@ -80,7 +80,6 @@ if __name__ == "__main__":
             gain = medCounts/stdCounts**2
             imArr *= gain
         assembleInput[amp.getName()] = db.makeExposure(im)
-
     assembleConfig = AssembleCcdTask.ConfigClass()
 
     if args.displayTrimmed:
@@ -94,5 +93,3 @@ if __name__ == "__main__":
         assembler = AssembleCcdTask(config=assembleConfig)
         resultExp = assembler.assembleCcd(assembleInput)
         camGeomUtils.showCcd(resultExp.getDetector(), imageSource(resultExp), frame=1)
-
-
